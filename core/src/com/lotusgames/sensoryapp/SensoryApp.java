@@ -38,26 +38,33 @@ public class SensoryApp extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		stage = new Stage(new StretchViewport(640, 480));
+		int width = 1280;
+		int height = 720;
+		int pad = 20;
+		float cell_w = width / 2.0f;
+		float cell_h = height * 0.75f;
+		int menubtn = 40;
+
+		stage = new Stage(new StretchViewport(width, height));
 		Gdx.input.setInputProcessor(stage);
 
-		leftGrid = new SensoryGrid(10, 170, 300, 300, deviceManager.device, settings);
-		rightGrid = new SensoryGrid(330, 170, 300, 300, deviceManager.device, settings);
+		leftGrid = new SensoryGrid(pad, height - cell_h + pad, cell_w - 1.5f * pad, cell_h - 2 * pad, deviceManager.device, settings);
+		rightGrid = new SensoryGrid(cell_w + 0.5f * pad, height - cell_h + pad, cell_w - 1.5f * pad, cell_h - 2 * pad, deviceManager.device, settings);
 
 		gameCounter = new GameCounter(settings, leftGrid, rightGrid);
 
-		leftButton = new DecisionButton(10, 10, 300, 150, settings, gameCounter, true);
-		rightButton = new DecisionButton(330, 10, 300, 150, settings, gameCounter, false);
+		leftButton = new DecisionButton(pad, pad, cell_w - 1.5f * pad, height - cell_h - pad, settings, gameCounter, true);
+		rightButton = new DecisionButton(cell_w + 0.5f * pad, pad, cell_w - 1.5f * pad, height - cell_h - pad, settings, gameCounter, false);
 
 		stage.addActor(leftGrid);
 		stage.addActor(rightGrid);
 		stage.addActor(leftButton);
 		stage.addActor(rightButton);
 
-		menuWindow = new MenuWindow(0, 480, 640, 480, settings, gameCounter, deviceManager);
+		menuWindow = new MenuWindow(0, height, width, height, settings, gameCounter, deviceManager);
 
 		stage.addActor(menuWindow);
-		stage.addActor(new MenuButton(0, stage.getViewport().getScreenHeight() - 40, 40, 40, settings, gameCounter, menuWindow));
+		stage.addActor(new MenuButton(0, height - menubtn, menubtn, menubtn, settings, gameCounter, menuWindow));
 
 		gameCounter.resetGame();
     }

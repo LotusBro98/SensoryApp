@@ -11,6 +11,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("SensoryApp");
+		config.setWindowSizeLimits(1280, 720, -1, -1);
 
 		DeviceConnection deviceConnection = new WindowsCOMPort();
 		new Lwjgl3Application(new SensoryApp(deviceConnection), config);
