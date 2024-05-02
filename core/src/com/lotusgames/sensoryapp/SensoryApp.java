@@ -26,8 +26,11 @@ public class SensoryApp extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
         try {
-            deviceConnection.open("COM5");
+			deviceConnection.open("COM5");
 			device.initialize();
+//			device.self_test();
+			device.set_impulse(0, 1, 20);
+			device.clear(0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

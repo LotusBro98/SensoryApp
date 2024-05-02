@@ -16,21 +16,76 @@ class Device (var deviceConnection: DeviceConnection) {
     private val CMD_CFG_SEG: Byte = 0x04
     private val CMD_SELF_TEST: Byte = 0x05
 
+    private var segments: MutableList<Segment> = mutableListOf()
+
     init {
-//        segments = mutableListOf()
-//        segments.add(Segment("L1P",      0, intArrayOf(0), 0, intArrayOf(9),500))
+        segments.add(Segment("finger",      4, intArrayOf(0, 1, 2, 3, 4, 5, 6, 7), 4, intArrayOf(12, 13, 14, 15),500))
     }
 
     fun initialize() {
-//        for (seg in segments) {
-//            set_seg(ctx, seg)
-//        }
+        for (seg in segments) {
+            set_seg(seg)
+        }
 
         sendCommand(cmd_init(), msg = "Init")
     }
 
     fun self_test() {
         sendCommand(cmd_self_test(), msg="Self Test")
+    }
+
+    fun get_mask(arr: IntArray): Int {
+        var mask = 0
+        for (i in 0..15) {
+            if (i in arr) {
+                mask = mask or (1 shl i)
+            }
+        }
+        return mask
+    }
+
+    fun set_seg(segment: Segment) {
+        val id = segments.indexOf(segment)
+        val mask1 = get_mask(segment.mask1)
+        val mask2 = get_mask(segment.mask2)
+        sendCommand(cmd_set_seg(id, segment.adr1, mask1, segment.adr2, mask2, segment.timeSlot), msg= "set segment ${segment.name}")
+    }
+
+    fun set_impulse(segment: Int, period: Int, tau: Int) {
+        sendCommand(cmd_set_impulse(segment, period, tau), msg="impulse on " + segments[segment].name + ", tau=" + tau)
+    }
+
+    fun clear(segment: Int) {
+        sendCommand(cmd_clear(segment), msg="clear impulse on " + segments[segment].name)
+    }
+
+    fun cmd_set_seg(segment: Int, adr1: Int, mask1:Int, adr2: Int, mask2:Int, time_window_us:Int): ByteArray {
+        var cmd = byteArrayOf(CMD_CFG_SEG)
+        cmd += UInt16toByteArray(mask1)
+        cmd += UInt16toByteArray(mask2)
+        cmd += UInt16toByteArray(time_window_us)
+        cmd += byteArrayOf(segment.toByte())
+        cmd += byteArrayOf(adr1.toByte())
+        cmd += byteArrayOf(adr2.toByte())
+        return cmd
+    }
+
+    fun cmd_set_impulse(segment: Int, per: Int, duration: Int): ByteArray {
+        var cmd = byteArrayOf(CMD_SET_IMPULSE)
+        var period = per
+        if (period < 1) {
+            period = 1
+        }
+        cmd += UInt16toByteArray(segment)
+        cmd += UInt16toByteArray(duration)
+        cmd += UInt16toByteArray(period)
+        return cmd
+    }
+
+    fun cmd_clear(segment: Int): ByteArray {
+        var cmd = byteArrayOf(CMD_CLEAR)
+        cmd += byteArrayOf(segment.toByte())
+        return cmd
     }
 
     fun cmd_self_test(): ByteArray {
@@ -57,17 +112,22 @@ class Device (var deviceConnection: DeviceConnection) {
         val timeout = 1000;
         try {
             deviceConnection.write(cmd)
-            val response = deviceConnection.read(3, timeout)
+            val response: ByteArray
+            if (command[0] == CMD_SELF_TEST) {
+                response = deviceConnection.read(7, timeout)
+            } else {
+                response = deviceConnection.read(4, timeout)
+            }
 
             if (log) {
                 val cmd_data = response
                 var cmd_data_str: String?
                 if (command[0] == CMD_SELF_TEST) {
-                    cmd_data_str = "addr=" + cmd_data[0].toString() + bytesToBitMask(cmd_data.copyOfRange(1, cmd_data.size - 1))
+                    cmd_data_str = "addr=" + cmd_data[4].toString() + "; bad pins:" + bytesToBitMask(cmd_data.copyOfRange(5, cmd_data.size))
                 } else {
                     cmd_data_str = bytesToHex(cmd_data)
                 }
-                val cmd_log = msg + " --> " + response?.decodeToString(1, 3) + " " + cmd_data_str + "\n"
+                val cmd_log = msg + " --> " + response?.decodeToString(1, 3) + " " + cmd_data_str
                 println(cmd_log)
             }
         } catch (e: Exception) {
@@ -163,6 +223,13 @@ class Device (var deviceConnection: DeviceConnection) {
         bytes[1] = ((value ushr 8) and 0xFFFF).toByte()
         bytes[2] = ((value ushr 16) and 0xFFFF).toByte()
         bytes[3] = ((value ushr 24) and 0xFFFF).toByte()
+        return bytes
+    }
+
+    fun UInt16toByteArray(value: Int): ByteArray {
+        val bytes = ByteArray(2)
+        bytes[0] = (value and 0xFFFF).toByte()
+        bytes[1] = ((value ushr 8) and 0xFFFF).toByte()
         return bytes
     }
 
