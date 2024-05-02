@@ -117,7 +117,7 @@ public class MenuWindow extends Table {
         this.deviceManager = deviceManager;
 
         setBounds(x, y, width, height);
-        skin = new Skin(Gdx.files.getFileHandle("uiskin.json", Files.FileType.Internal));
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
         setDebug(false);
         setFillParent(true);
 

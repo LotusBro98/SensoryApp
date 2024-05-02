@@ -9,6 +9,7 @@ import com.lotusgames.sensoryapp.device.Device;
 import com.lotusgames.sensoryapp.device.DeviceConnection;
 import com.lotusgames.sensoryapp.device.DeviceManager;
 import com.lotusgames.sensoryapp.device.Segment;
+import com.lotusgames.sensoryapp.widgets.CorrectSplash;
 import com.lotusgames.sensoryapp.widgets.MenuButton;
 import com.lotusgames.sensoryapp.widgets.MenuWindow;
 import com.lotusgames.sensoryapp.widgets.DecisionButton;
@@ -61,10 +62,12 @@ public class SensoryApp extends ApplicationAdapter {
 		stage.addActor(leftButton);
 		stage.addActor(rightButton);
 
-		menuWindow = new MenuWindow(0, height, width, height, settings, gameCounter, deviceManager);
+		menuWindow = new MenuWindow(0, 0, width, height, settings, gameCounter, deviceManager);
 
 		stage.addActor(menuWindow);
 		stage.addActor(new MenuButton(0, height - menubtn, menubtn, menubtn, settings, gameCounter, menuWindow));
+
+		stage.addActor(new CorrectSplash(0, 0, width, height, gameCounter));
 
 		gameCounter.resetGame();
     }

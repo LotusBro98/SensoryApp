@@ -12,6 +12,8 @@ public class GameCounter {
     private boolean left = true;
     public int nCorrect = 0;
     public int nWrong = 0;
+    public boolean lastCorrect = false;
+    public boolean firstRound = true;
 
     private SensoryGrid leftGrid;
     private SensoryGrid rightGrid;
@@ -44,18 +46,22 @@ public class GameCounter {
 
     public void makeChoice(boolean left) {
         if (left == this.left) {
+            lastCorrect = true;
             nCorrect++;
             System.out.println("Correct!");
         } else {
+            lastCorrect = false;
             nWrong++;
             System.out.println("Wrong!");
         }
+        firstRound = false;
         resetRound();
     }
 
     public void resetGame() {
         nCorrect = 0;
         nWrong = 0;
+        firstRound = true;
         resetRound();
     }
 

@@ -29,7 +29,7 @@ public class MenuButton extends Actor {
     Settings settings;
     GameCounter gameCounter;
     MenuWindow menuWindow;
-    boolean closed = true;
+    boolean closed = false;
 
     public MenuButton(float x, float y, float width, float height, Settings settings, GameCounter gameCounter, MenuWindow menuWindow) {
         this.settings = settings;
