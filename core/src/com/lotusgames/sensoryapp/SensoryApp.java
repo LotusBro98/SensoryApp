@@ -2,9 +2,19 @@ package com.lotusgames.sensoryapp;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.lotusgames.sensoryapp.device.Device;
 import com.lotusgames.sensoryapp.device.DeviceConnection;
 import com.lotusgames.sensoryapp.device.Segment;
@@ -14,6 +24,7 @@ import java.io.IOException;
 public class SensoryApp extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
+	private Stage stage;
 
 	private DeviceConnection deviceConnection;
 	private Device device;
@@ -46,21 +57,28 @@ public class SensoryApp extends ApplicationAdapter {
 		img = new Texture("badlogic.jpg");
 		initDevice("COM5");
 
-		MyInputProcessor inputProcessor = new MyInputProcessor(device);
-		Gdx.input.setInputProcessor(inputProcessor);
+		stage = new Stage(new StretchViewport(640, 480));
+		Gdx.input.setInputProcessor(stage);
+		stage.addActor(new SensoryGridActor());
     }
 
 	@Override
 	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+		float delta = Gdx.graphics.getDeltaTime();
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		stage.act(delta);
+		stage.draw();
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
+		stage.dispose();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		stage.getViewport().update(width, height, true);
 	}
 }
