@@ -40,9 +40,21 @@ public class DecisionButton extends Actor {
         renderer.setTransformMatrix(batch.getTransformMatrix());
         renderer.translate(getX(), getY(), 0);
 
+        float pad = 16;
+        float arw_width = getWidth() / 6;
+        float arw_height = getHeight() / 3;
+
         renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(Color.YELLOW);
+        renderer.setColor(1, 1, 0.1f, 1);
         renderer.rect(0, 0, getWidth(), getHeight());
+
+        renderer.setColor(Color.BLACK);
+        renderer.rect(getWidth() / 2 - arw_width / 2, pad, arw_width, getHeight() - arw_height - pad);
+        renderer.triangle(
+            getWidth() / 2 - arw_width, getHeight() - arw_height,
+            getWidth() / 2, getHeight() - pad,
+            getWidth() / 2 + arw_width, getHeight() - arw_height
+        );
 
         renderer.end();
         batch.begin();
