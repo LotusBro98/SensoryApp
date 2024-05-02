@@ -9,4 +9,5 @@ public class Settings {
     public float duration_ms = 10;
     public int linesMin = 10;
     public int linesMax = 20;
+    public boolean drawLines = true;
 }

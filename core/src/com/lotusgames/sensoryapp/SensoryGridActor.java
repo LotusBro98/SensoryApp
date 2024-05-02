@@ -73,9 +73,11 @@ public class SensoryGridActor extends Actor {
         renderer.setColor(Color.WHITE);
         renderer.rect(0, 0, getWidth(), getHeight());
 
-
-        for (float y: lines) {
-            renderer.line(0, y, getWidth(), y);
+        if (settings.drawLines) {
+            renderer.setColor(Color.GRAY);
+            for (float y : lines) {
+                renderer.line(0, y, getWidth(), y);
+            }
         }
 
         renderer.end();
@@ -86,12 +88,13 @@ public class SensoryGridActor extends Actor {
         Random randGen = new Random();
 
         lines.clear();
-        float y_cum = randGen.nextFloat();
+        float y_cum = randGen.nextFloat() + 0.1f;;
         for (int i = 0; i < n_lines; i++) {
             float dy = randGen.nextFloat() + 0.5f;
             lines.add(y_cum + dy);
             y_cum += dy;
         }
+        y_cum += randGen.nextFloat() + 0.1f;
 
         for (int i = 0; i < n_lines; i++) {
             lines.set(i, lines.get(i) * getHeight() / y_cum);
