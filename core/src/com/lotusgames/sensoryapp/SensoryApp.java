@@ -1,6 +1,7 @@
 package com.lotusgames.sensoryapp;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -22,27 +23,31 @@ public class SensoryApp extends ApplicationAdapter {
 		this.device = new Device(deviceConnection);
     }
 
-	private void initDevice(String portName) throws IOException {
-		deviceConnection.open(portName);
-		int addr = device.self_test();
-		device.add_segment(new Segment(
-				"finger",
-				addr, new int[]{0, 1, 2, 3, 4, 5, 6, 7},
-				addr, new int[]{12, 13, 14, 15},
-				500
-		));
-		device.initialize();
+	private Boolean initDevice(String portName) {
+		try {
+			deviceConnection.open(portName);
+			int addr = device.self_test();
+			device.add_segment(new Segment(
+					"finger",
+					addr, new int[]{0, 1, 2, 3, 4, 5, 6, 7},
+					addr, new int[]{12, 13, 14, 15},
+					500
+			));
+			device.initialize();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
-        try {
-			initDevice("COM5");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+		initDevice("COM5");
+
+		MyInputProcessor inputProcessor = new MyInputProcessor(device);
+		Gdx.input.setInputProcessor(inputProcessor);
     }
 
 	@Override

@@ -1,6 +1,7 @@
 package com.lotusgames.sensoryapp.device;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 public interface DeviceConnection {
@@ -13,4 +14,6 @@ public interface DeviceConnection {
     void close();
 
     Boolean useProtocol();
+
+    String[] availablePorts();
 }

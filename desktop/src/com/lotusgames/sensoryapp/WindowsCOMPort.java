@@ -5,11 +5,13 @@ import com.lotusgames.sensoryapp.device.DeviceConnection;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
+import jssc.SerialPortList;
 
 public class WindowsCOMPort implements DeviceConnection {
     private SerialPort serialPort;
@@ -57,5 +59,10 @@ public class WindowsCOMPort implements DeviceConnection {
     @Override
     public Boolean useProtocol() {
         return false;
+    }
+
+    @Override
+    public String[] availablePorts() {
+        return SerialPortList.getPortNames();
     }
 }
