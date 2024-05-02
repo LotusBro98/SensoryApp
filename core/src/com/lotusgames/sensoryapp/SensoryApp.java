@@ -8,6 +8,8 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.lotusgames.sensoryapp.device.Device;
 import com.lotusgames.sensoryapp.device.DeviceConnection;
 import com.lotusgames.sensoryapp.device.Segment;
+import com.lotusgames.sensoryapp.widgets.MenuButton;
+import com.lotusgames.sensoryapp.widgets.MenuWindow;
 import com.lotusgames.sensoryapp.widgets.SelectButton;
 import com.lotusgames.sensoryapp.widgets.SensoryGrid;
 
@@ -24,6 +26,7 @@ public class SensoryApp extends ApplicationAdapter {
 	private SensoryGrid rightGrid;
 	private SelectButton leftButton;
 	private SelectButton rightButton;
+	private MenuWindow menuWindow;
 
 	public SensoryApp(DeviceConnection deviceConnection) {
 		this.deviceConnection = deviceConnection;
@@ -67,6 +70,11 @@ public class SensoryApp extends ApplicationAdapter {
 		stage.addActor(rightGrid);
 		stage.addActor(leftButton);
 		stage.addActor(rightButton);
+
+		menuWindow = new MenuWindow(-320, 0, 320, 480, settings, gameCounter);
+
+		stage.addActor(menuWindow);
+		stage.addActor(new MenuButton(0, stage.getViewport().getScreenHeight() - 40, 40, 40, settings, gameCounter, menuWindow));
 
 		gameCounter.resetGame();
     }

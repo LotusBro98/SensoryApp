@@ -1,5 +1,7 @@
 package com.lotusgames.sensoryapp;
 
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.lotusgames.sensoryapp.widgets.SensoryGrid;
 
 import java.util.Random;
