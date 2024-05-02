@@ -27,6 +27,9 @@ public class SensoryGridActor extends Actor {
 
         @Override
         public void touchDragged(InputEvent event, float x, float y, int pointer) {
+            if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight())
+                return;
+
             if (Gdx.input.justTouched()) {
                 y_prev = y;
                 return;
