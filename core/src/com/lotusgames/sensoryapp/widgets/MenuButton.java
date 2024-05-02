@@ -48,9 +48,13 @@ public class MenuButton extends Actor {
         renderer.setTransformMatrix(batch.getTransformMatrix());
         renderer.translate(getX(), getY(), 0);
 
+        float st = getHeight() / 9;
+
         renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(Color.RED);
-        renderer.rect(0, 0, getWidth(), getHeight());
+        renderer.setColor(Color.WHITE);
+        renderer.rect(st * 2, st * 2, st * 5.5f, st);
+        renderer.rect(st * 2, st * 4, st * 5.5f, st);
+        renderer.rect(st * 2, st * 6, st * 5.5f, st);
 
         renderer.end();
         batch.begin();
