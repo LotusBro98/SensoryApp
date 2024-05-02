@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.lotusgames.sensoryapp.device.Device;
 import com.lotusgames.sensoryapp.device.DeviceConnection;
+import com.lotusgames.sensoryapp.device.Segment;
 
 import java.io.IOException;
 
@@ -21,16 +22,24 @@ public class SensoryApp extends ApplicationAdapter {
 		this.device = new Device(deviceConnection);
     }
 
+	private void initDevice(String portName) throws IOException {
+		deviceConnection.open(portName);
+		int addr = device.self_test();
+		device.add_segment(new Segment(
+				"finger",
+				addr, new int[]{0, 1, 2, 3, 4, 5, 6, 7},
+				addr, new int[]{12, 13, 14, 15},
+				500
+		));
+		device.initialize();
+	}
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
         try {
-			deviceConnection.open("COM5");
-			device.initialize();
-//			device.self_test();
-			device.set_impulse(0, 1, 20);
-			device.clear(0);
+			initDevice("COM5");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
