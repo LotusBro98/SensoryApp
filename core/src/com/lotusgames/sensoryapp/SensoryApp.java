@@ -28,6 +28,7 @@ public class SensoryApp extends ApplicationAdapter {
 
 	private DeviceConnection deviceConnection;
 	private Device device;
+	private Settings settings;
 
 	public SensoryApp(DeviceConnection deviceConnection) {
 		this.deviceConnection = deviceConnection;
@@ -40,8 +41,8 @@ public class SensoryApp extends ApplicationAdapter {
 			int addr = device.self_test();
 			device.add_segment(new Segment(
 					"finger",
-					addr, new int[]{0, 1, 2, 3, 4, 5, 6, 7},
-					addr, new int[]{12, 13, 14, 15},
+					addr, settings.pinsA,
+					addr, settings.pinsB,
 					500
 			));
 			device.initialize();
@@ -53,13 +54,16 @@ public class SensoryApp extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+		settings = new Settings();
+
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
-		initDevice("COM5");
+		initDevice(settings.devicePort);
 
 		stage = new Stage(new StretchViewport(640, 480));
 		Gdx.input.setInputProcessor(stage);
-		stage.addActor(new SensoryGridActor());
+		stage.addActor(new SensoryGridActor(10, 170, 300, 300, device, settings));
+		stage.addActor(new SensoryGridActor(330, 170, 300, 300, device, settings));
     }
 
 	@Override
