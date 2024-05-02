@@ -1,22 +1,19 @@
-package com.lotusgames.sensoryapp;
+package com.lotusgames.sensoryapp.widgets;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.lotusgames.sensoryapp.Settings;
 import com.lotusgames.sensoryapp.device.Device;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class SensoryGridActor extends Actor {
+public class SensoryGrid extends Actor {
     private class MyInputListener extends InputListener {
         float y_prev = 0;
         public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -51,7 +48,7 @@ public class SensoryGridActor extends Actor {
     Settings settings;
     ArrayList<Float> lines = new ArrayList<>();
 
-    public SensoryGridActor(float x, float y, float width, float height, Device device, Settings settings) {
+    public SensoryGrid(float x, float y, float width, float height, Device device, Settings settings) {
         this.device = device;
         this.settings = settings;
 

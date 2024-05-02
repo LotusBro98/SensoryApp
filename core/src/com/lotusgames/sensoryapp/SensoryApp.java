@@ -2,36 +2,27 @@ package com.lotusgames.sensoryapp;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.lotusgames.sensoryapp.device.Device;
 import com.lotusgames.sensoryapp.device.DeviceConnection;
 import com.lotusgames.sensoryapp.device.Segment;
+import com.lotusgames.sensoryapp.widgets.SelectButton;
+import com.lotusgames.sensoryapp.widgets.SensoryGrid;
 
 import java.io.IOException;
 
 public class SensoryApp extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
 	private Stage stage;
 
 	private DeviceConnection deviceConnection;
 	private Device device;
 	private Settings settings;
-	private SensoryGridActor leftGrid;
-	private SensoryGridActor rightGrid;
+	private SensoryGrid leftGrid;
+	private SensoryGrid rightGrid;
+	private SelectButton leftButton;
+	private SelectButton rightButton;
 
 	public SensoryApp(DeviceConnection deviceConnection) {
 		this.deviceConnection = deviceConnection;
@@ -55,25 +46,47 @@ public class SensoryApp extends ApplicationAdapter {
 		}
 	}
 
+	private void resetScene() {
+		boolean left = true;
+		if (left) {
+			leftGrid.makeGrid(settings.linesMax);
+			rightGrid.makeGrid(settings.linesMin);
+			leftButton.setCorrect(true);
+			rightButton.setCorrect(false);
+		} else {
+			leftGrid.makeGrid(settings.linesMin);
+			rightGrid.makeGrid(settings.linesMax);
+			leftButton.setCorrect(false);
+			rightButton.setCorrect(true);
+		}
+	}
+
+	private void resetStats() {
+		settings.nCorrect = 0;
+		settings.nWrong = 0;
+	}
+
 	@Override
 	public void create () {
 		settings = new Settings();
-
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
 		initDevice(settings.devicePort);
 
 		stage = new Stage(new StretchViewport(640, 480));
 		Gdx.input.setInputProcessor(stage);
 
-		leftGrid = new SensoryGridActor(10, 170, 300, 300, device, settings);
-		rightGrid = new SensoryGridActor(330, 170, 300, 300, device, settings);
+		leftGrid = new SensoryGrid(10, 170, 300, 300, device, settings);
+		rightGrid = new SensoryGrid(330, 170, 300, 300, device, settings);
+
+		leftButton = new SelectButton(10, 10, 300, 150, settings);
+		rightButton = new SelectButton(330, 10, 300, 150, settings);
 
 		stage.addActor(leftGrid);
 		stage.addActor(rightGrid);
+		stage.addActor(leftButton);
+		stage.addActor(rightButton);
 
-		leftGrid.makeGrid(settings.linesMin);
-		rightGrid.makeGrid(settings.linesMax);
+		resetScene();
+		resetStats();
     }
 
 	@Override
@@ -86,8 +99,6 @@ public class SensoryApp extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
-		img.dispose();
 		stage.dispose();
 	}
 
