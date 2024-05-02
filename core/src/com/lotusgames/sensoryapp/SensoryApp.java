@@ -29,6 +29,8 @@ public class SensoryApp extends ApplicationAdapter {
 	private DeviceConnection deviceConnection;
 	private Device device;
 	private Settings settings;
+	private SensoryGridActor leftGrid;
+	private SensoryGridActor rightGrid;
 
 	public SensoryApp(DeviceConnection deviceConnection) {
 		this.deviceConnection = deviceConnection;
@@ -62,8 +64,15 @@ public class SensoryApp extends ApplicationAdapter {
 
 		stage = new Stage(new StretchViewport(640, 480));
 		Gdx.input.setInputProcessor(stage);
-		stage.addActor(new SensoryGridActor(10, 170, 300, 300, device, settings));
-		stage.addActor(new SensoryGridActor(330, 170, 300, 300, device, settings));
+
+		leftGrid = new SensoryGridActor(10, 170, 300, 300, device, settings);
+		rightGrid = new SensoryGridActor(330, 170, 300, 300, device, settings);
+
+		stage.addActor(leftGrid);
+		stage.addActor(rightGrid);
+
+		leftGrid.makeGrid(settings.linesMin);
+		rightGrid.makeGrid(settings.linesMax);
     }
 
 	@Override

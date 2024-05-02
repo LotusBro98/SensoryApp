@@ -7,6 +7,6 @@ public class Settings {
     public float tau_us = 20;
     public float frequency_Hz = 100;
     public float duration_ms = 100;
-    public float densityMin = 0.3f;
-    public float densityMax = 0.7f;
+    public int linesMin = 10;
+    public int linesMax = 20;
 }
