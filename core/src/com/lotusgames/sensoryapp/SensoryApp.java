@@ -54,7 +54,7 @@ public class SensoryApp extends ApplicationAdapter {
 		stage.addActor(leftButton);
 		stage.addActor(rightButton);
 
-		menuWindow = new MenuWindow(-320, 0, 320, 480, settings, gameCounter, deviceManager);
+		menuWindow = new MenuWindow(0, 480, 640, 480, settings, gameCounter, deviceManager);
 
 		stage.addActor(menuWindow);
 		stage.addActor(new MenuButton(0, stage.getViewport().getScreenHeight() - 40, 40, 40, settings, gameCounter, menuWindow));

@@ -3,6 +3,8 @@ package com.lotusgames.sensoryapp.widgets;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL32;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -29,17 +31,9 @@ public class MenuWindow extends Table {
     Settings settings;
     GameCounter gameCounter;
     DeviceManager deviceManager;
+    Skin skin;
 
-    public MenuWindow(float x, float y, float width, float height, Settings settings, GameCounter gameCounter, DeviceManager deviceManager) {
-        this.settings = settings;
-        this.gameCounter = gameCounter;
-        this.deviceManager = deviceManager;
-
-        setBounds(x, y, width, height);
-        Skin skin = new Skin(Gdx.files.getFileHandle("uiskin.json", Files.FileType.Internal));
-        setDebug(true);
-
-
+    private void configDevicePort() {
         SelectBox<String> devicePort = new SelectBox<>(skin);
         devicePort.setItems(settings.devicePortOptions);
         if (Arrays.asList(settings.devicePortOptions).contains(settings.devicePort)) {
@@ -51,11 +45,12 @@ public class MenuWindow extends Table {
                 settings.devicePort = devicePort.getSelected();
             }
         });
-        add(new Label("Device Port:", skin));
-        add(devicePort).width(100);
+        add(new Label("Device Port:", skin)).pad(4);
+        add(devicePort).width(100).pad(4);
         row();
+    }
 
-
+    private void configTauSelect() {
         SelectBox<Double> tauSelect = new SelectBox<>(skin);
         tauSelect.setItems(10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0);
         tauSelect.addListener(new ChangeListener() {
@@ -64,11 +59,12 @@ public class MenuWindow extends Table {
                 settings.tau_us = tauSelect.getSelected().floatValue();
             }
         });
-        add(new Label("Impulse strength (tau, us):", skin));
-        add(tauSelect).width(100);
+        add(new Label("Impulse strength (tau, us):", skin)).pad(4);
+        add(tauSelect).width(100).pad(4);
         row();
+    }
 
-
+    private void configInitDevice() {
         TextButton initDevice = new TextButton("Init Device", skin);
         initDevice.addListener(new InputListener(){
             @Override
@@ -77,9 +73,11 @@ public class MenuWindow extends Table {
                 return true;
             }
         });
-        add(initDevice).width(150).colspan(2);
+        add(initDevice).width(150).colspan(2).pad(4);
         row();
+    }
 
+    private void configResetGame() {
         TextButton resetGame = new TextButton("Reset Game", skin);
         resetGame.addListener(new InputListener(){
             @Override
@@ -88,9 +86,11 @@ public class MenuWindow extends Table {
                 return true;
             }
         });
-        add(resetGame).width(150).colspan(2);
+        add(resetGame).width(150).colspan(2).pad(4);
         row();
+    }
 
+    private void configShowLines() {
         CheckBox showLines = new CheckBox("Show lines ", skin);
         showLines.setChecked(settings.drawLines);
         showLines.addListener(new ChangeListener() {
@@ -99,13 +99,53 @@ public class MenuWindow extends Table {
                 settings.drawLines = showLines.isChecked();
             }
         });
-        add(new Label("", skin));
-        add(showLines);
+        add(new Label("", skin)).pad(4);
+        add(showLines).pad(4);
         row();
+    }
 
+    private void configCorrectPart() {
         Label correctPart = new Label("", skin);
         gameCounter.addCallback(() -> correctPart.setText("%d %%".formatted((int)(gameCounter.getCorrectPart() * 100))));
-        add(new Label("Correct percent:", skin));
-        add(correctPart).width(100);
+        add(new Label("Correct percent:", skin)).pad(4);
+        add(correctPart).width(100).pad(4);
+    }
+
+    public MenuWindow(float x, float y, float width, float height, Settings settings, GameCounter gameCounter, DeviceManager deviceManager) {
+        this.settings = settings;
+        this.gameCounter = gameCounter;
+        this.deviceManager = deviceManager;
+
+        setBounds(x, y, width, height);
+        skin = new Skin(Gdx.files.getFileHandle("uiskin.json", Files.FileType.Internal));
+        setDebug(false);
+        setFillParent(true);
+
+        configDevicePort();
+        configTauSelect();
+        configInitDevice();
+        configResetGame();
+        configShowLines();
+        configCorrectPart();
+    }
+
+    private ShapeRenderer renderer = new ShapeRenderer();
+    @Override
+    protected void drawBackground(Batch batch, float parentAlpha, float x, float y) {
+        batch.end();
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        renderer.setProjectionMatrix(batch.getProjectionMatrix());
+        renderer.setTransformMatrix(batch.getTransformMatrix());
+        renderer.translate(getX(), getY(), 0);
+
+        renderer.begin(ShapeRenderer.ShapeType.Filled);
+        renderer.setColor(0, 0, 0, 0.7f);
+        renderer.rect(0, 0, getWidth(), getHeight());
+
+        renderer.end();
+        batch.begin();
     }
 }

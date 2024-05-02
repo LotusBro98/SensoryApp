@@ -15,9 +15,9 @@ public class MenuButton extends Actor {
     private class MyInputListener extends InputListener {
         public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
             if (closed) {
-                menuWindow.addAction(Actions.moveBy(menuWindow.getWidth(), 0, 0.5f, Interpolation.exp5));
+                menuWindow.addAction(Actions.moveBy(0, -menuWindow.getHeight(), 0.5f, Interpolation.exp5));
             } else {
-                menuWindow.addAction(Actions.moveBy(-menuWindow.getWidth(), 0, 0.5f, Interpolation.exp5));
+                menuWindow.addAction(Actions.moveBy(0, menuWindow.getHeight(), 0.5f, Interpolation.exp5));
             }
             closed = !closed;
             return true;
