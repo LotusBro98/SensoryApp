@@ -19,6 +19,7 @@ public class SensoryApp extends ApplicationAdapter {
 	private DeviceConnection deviceConnection;
 	private Device device;
 	private Settings settings;
+	private GameCounter gameCounter;
 	private SensoryGrid leftGrid;
 	private SensoryGrid rightGrid;
 	private SelectButton leftButton;
@@ -46,26 +47,6 @@ public class SensoryApp extends ApplicationAdapter {
 		}
 	}
 
-	private void resetScene() {
-		boolean left = true;
-		if (left) {
-			leftGrid.makeGrid(settings.linesMax);
-			rightGrid.makeGrid(settings.linesMin);
-			leftButton.setCorrect(true);
-			rightButton.setCorrect(false);
-		} else {
-			leftGrid.makeGrid(settings.linesMin);
-			rightGrid.makeGrid(settings.linesMax);
-			leftButton.setCorrect(false);
-			rightButton.setCorrect(true);
-		}
-	}
-
-	private void resetStats() {
-		settings.nCorrect = 0;
-		settings.nWrong = 0;
-	}
-
 	@Override
 	public void create () {
 		settings = new Settings();
@@ -77,16 +58,17 @@ public class SensoryApp extends ApplicationAdapter {
 		leftGrid = new SensoryGrid(10, 170, 300, 300, device, settings);
 		rightGrid = new SensoryGrid(330, 170, 300, 300, device, settings);
 
-		leftButton = new SelectButton(10, 10, 300, 150, settings);
-		rightButton = new SelectButton(330, 10, 300, 150, settings);
+		gameCounter = new GameCounter(settings, leftGrid, rightGrid);
+
+		leftButton = new SelectButton(10, 10, 300, 150, settings, gameCounter, true);
+		rightButton = new SelectButton(330, 10, 300, 150, settings, gameCounter, false);
 
 		stage.addActor(leftGrid);
 		stage.addActor(rightGrid);
 		stage.addActor(leftButton);
 		stage.addActor(rightButton);
 
-		resetScene();
-		resetStats();
+		gameCounter.resetGame();
     }
 
 	@Override

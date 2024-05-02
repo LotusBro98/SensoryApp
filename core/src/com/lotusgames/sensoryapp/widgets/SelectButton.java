@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.lotusgames.sensoryapp.GameCounter;
 import com.lotusgames.sensoryapp.Settings;
 import com.lotusgames.sensoryapp.device.Device;
 
@@ -17,12 +18,7 @@ public class SelectButton extends Actor {
     private class MyInputListener extends InputListener {
         float y_prev = 0;
         public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-            if (correct) {
-                settings.nCorrect++;
-            } else {
-                settings.nWrong++;
-            }
-            System.out.println("Select! Correct: " + correct + ". Correct_percent: " + (int)((float)settings.nCorrect / (settings.nCorrect + settings.nWrong) * 100) + "%");
+            gameCounter.makeChoice(left);
             return true;
         }
         public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -30,14 +26,13 @@ public class SelectButton extends Actor {
     }
 
     Settings settings;
-    boolean correct = false;
+    GameCounter gameCounter;
+    boolean left;
 
-    public void setCorrect(boolean correct) {
-        this.correct = correct;
-    }
-
-    public SelectButton(float x, float y, float width, float height, Settings settings) {
+    public SelectButton(float x, float y, float width, float height, Settings settings, GameCounter gameCounter, boolean left) {
         this.settings = settings;
+        this.gameCounter = gameCounter;
+        this.left = left;
         setBounds(x, y, width, height);
         addListener(new MyInputListener());
     }

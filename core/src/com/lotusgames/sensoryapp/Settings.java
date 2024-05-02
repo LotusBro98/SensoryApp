@@ -10,7 +10,4 @@ public class Settings {
     public int linesMin = 10;
     public int linesMax = 20;
     public boolean drawLines = true;
-
-    public int nCorrect = 0;
-    public int nWrong = 0;
 }
