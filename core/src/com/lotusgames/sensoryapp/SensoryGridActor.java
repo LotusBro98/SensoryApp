@@ -1,5 +1,7 @@
 package com.lotusgames.sensoryapp;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.lotusgames.sensoryapp.device.Device;
 
 import java.util.ArrayList;
@@ -15,14 +18,29 @@ import java.util.Random;
 
 public class SensoryGridActor extends Actor {
     private class MyInputListener extends InputListener {
+        float y_prev = 0;
         public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-            System.out.println("down " + Float.toString(x));
-            device.generate_impulse(0, settings.tau_us, settings.frequency_Hz, settings.duration_ms);
             return true;
         }
-
         public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-            System.out.println("up");
+        }
+
+        @Override
+        public void touchDragged(InputEvent event, float x, float y, int pointer) {
+            if (Gdx.input.justTouched()) {
+                y_prev = y;
+                return;
+            }
+            for (float y_line : lines) {
+                if (
+                    y_prev < y_line && y >= y_line ||
+                    y_prev > y_line && y <= y_line
+                ) {
+                    device.generate_impulse(0, settings.tau_us, settings.frequency_Hz, settings.duration_ms);
+                    break;
+                }
+            }
+            y_prev = y;
         }
     }
 
