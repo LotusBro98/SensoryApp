@@ -30,6 +30,10 @@ class Device (var deviceConnection: DeviceConnection) {
         segments.add(segment)
     }
 
+    fun clear_segments() {
+        segments.clear()
+    }
+
     fun initialize() {
         for (seg in segments) {
             set_seg(seg)

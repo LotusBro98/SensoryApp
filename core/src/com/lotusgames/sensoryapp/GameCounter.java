@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.lotusgames.sensoryapp.widgets.SensoryGrid;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GameCounter {
@@ -14,6 +16,8 @@ public class GameCounter {
     private SensoryGrid leftGrid;
     private SensoryGrid rightGrid;
     private Settings settings;
+
+    private List<Runnable> callbacks = new ArrayList<>();
 
     public GameCounter(Settings settings, SensoryGrid leftGrid, SensoryGrid rightGrid) {
         this.settings = settings;
@@ -32,6 +36,10 @@ public class GameCounter {
             leftGrid.makeGrid(settings.linesMin);
             rightGrid.makeGrid(settings.linesMax);
         }
+
+        for (Runnable cb: callbacks) {
+            cb.run();
+        }
     }
 
     public void makeChoice(boolean left) {
@@ -43,8 +51,6 @@ public class GameCounter {
             System.out.println("Wrong!");
         }
         resetRound();
-
-        System.out.println("Correct percent: " + (int)(getCorrectPart() * 100));
     }
 
     public void resetGame() {
@@ -55,5 +61,9 @@ public class GameCounter {
 
     public float getCorrectPart() {
         return (float) nCorrect / (float) (nCorrect + nWrong);
+    }
+
+    public void addCallback(Runnable callback) {
+        callbacks.add(callback);
     }
 }

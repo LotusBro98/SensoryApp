@@ -29,7 +29,9 @@ public class WindowsCOMPort implements DeviceConnection {
     @Override
     public void close() {
         try {
-            serialPort.closePort();
+            if (serialPort != null && serialPort.isOpened()) {
+                serialPort.closePort();
+            }
         } catch (SerialPortException e) {
             e.printStackTrace();
         }

@@ -7,10 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.lotusgames.sensoryapp.device.Device;
 import com.lotusgames.sensoryapp.device.DeviceConnection;
+import com.lotusgames.sensoryapp.device.DeviceManager;
 import com.lotusgames.sensoryapp.device.Segment;
 import com.lotusgames.sensoryapp.widgets.MenuButton;
 import com.lotusgames.sensoryapp.widgets.MenuWindow;
-import com.lotusgames.sensoryapp.widgets.SelectButton;
+import com.lotusgames.sensoryapp.widgets.DecisionButton;
 import com.lotusgames.sensoryapp.widgets.SensoryGrid;
 
 import java.io.IOException;
@@ -18,60 +19,42 @@ import java.io.IOException;
 public class SensoryApp extends ApplicationAdapter {
 	private Stage stage;
 
-	private DeviceConnection deviceConnection;
-	private Device device;
+	private DeviceManager deviceManager;
 	private Settings settings;
 	private GameCounter gameCounter;
 	private SensoryGrid leftGrid;
 	private SensoryGrid rightGrid;
-	private SelectButton leftButton;
-	private SelectButton rightButton;
+	private DecisionButton leftButton;
+	private DecisionButton rightButton;
 	private MenuWindow menuWindow;
 
 	public SensoryApp(DeviceConnection deviceConnection) {
-		this.deviceConnection = deviceConnection;
-		this.device = new Device(deviceConnection);
+		settings = new Settings();
+		settings.devicePortOptions = deviceConnection.availablePorts();
+		this.deviceManager = new DeviceManager(deviceConnection, settings);
     }
 
-	private Boolean initDevice(String portName) {
-		try {
-			deviceConnection.open(portName);
-			int addr = device.self_test();
-			device.add_segment(new Segment(
-					"finger",
-					addr, settings.pinsA,
-					addr, settings.pinsB,
-					500
-			));
-			device.initialize();
-			return true;
-		} catch (IOException e) {
-			return false;
-		}
-	}
+
 
 	@Override
 	public void create () {
-		settings = new Settings();
-		initDevice(settings.devicePort);
-
 		stage = new Stage(new StretchViewport(640, 480));
 		Gdx.input.setInputProcessor(stage);
 
-		leftGrid = new SensoryGrid(10, 170, 300, 300, device, settings);
-		rightGrid = new SensoryGrid(330, 170, 300, 300, device, settings);
+		leftGrid = new SensoryGrid(10, 170, 300, 300, deviceManager.device, settings);
+		rightGrid = new SensoryGrid(330, 170, 300, 300, deviceManager.device, settings);
 
 		gameCounter = new GameCounter(settings, leftGrid, rightGrid);
 
-		leftButton = new SelectButton(10, 10, 300, 150, settings, gameCounter, true);
-		rightButton = new SelectButton(330, 10, 300, 150, settings, gameCounter, false);
+		leftButton = new DecisionButton(10, 10, 300, 150, settings, gameCounter, true);
+		rightButton = new DecisionButton(330, 10, 300, 150, settings, gameCounter, false);
 
 		stage.addActor(leftGrid);
 		stage.addActor(rightGrid);
 		stage.addActor(leftButton);
 		stage.addActor(rightButton);
 
-		menuWindow = new MenuWindow(-320, 0, 320, 480, settings, gameCounter);
+		menuWindow = new MenuWindow(-320, 0, 320, 480, settings, gameCounter, deviceManager);
 
 		stage.addActor(menuWindow);
 		stage.addActor(new MenuButton(0, stage.getViewport().getScreenHeight() - 40, 40, 40, settings, gameCounter, menuWindow));
