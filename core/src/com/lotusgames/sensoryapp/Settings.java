@@ -3,7 +3,7 @@ package com.lotusgames.sensoryapp;
 import java.util.List;
 
 public class Settings {
-    public String devicePort = "COM5";
+    public String devicePort = "";
     public String[] devicePortOptions;
     public int[] pinsA = {0, 1, 2, 3, 4, 5, 6, 7};
     public int[] pinsB = {12, 13, 14, 15};
