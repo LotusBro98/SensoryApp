@@ -48,6 +48,7 @@ public class MenuWindow extends Table {
     }
 
     public void reloadDevicePorts() {
+        settings.devicePortOptions = deviceManager.getDeviceConnection().availablePorts();
         ArrayList<DeviceConnection.Port> options = new ArrayList<>(Arrays.asList(settings.devicePortOptions));
         options.add(0, nullport);
         DeviceConnection.Port[] options_arr = new DeviceConnection.Port[options.size()];
@@ -56,11 +57,19 @@ public class MenuWindow extends Table {
         if (options.contains(settings.devicePort)) {
             devicePort.setSelected(settings.devicePort);
         } else {
-            devicePort.setSelected(nullport);
+            DeviceConnection.Port selectPort = nullport;
+            for (DeviceConnection.Port port : settings.devicePortOptions) {
+                if (port.description.contains("CyberSuit")) {
+                    selectPort = port;
+                    break;
+                }
+            }
+            devicePort.setSelected(selectPort);
         }
     }
 
     public boolean open() {
+        reloadDevicePorts();
         addAction(Actions.moveBy(0, -getHeight(), 0.5f, Interpolation.exp5));
         return true;
     }
@@ -89,6 +98,14 @@ public class MenuWindow extends Table {
                 } else {
                     settings.devicePort = devicePort.getSelected();
                 }
+            }
+
+            @Override
+            public boolean handle(Event event) {
+                if (event.toString().equals("enter")) {
+                    reloadDevicePorts();
+                }
+                return super.handle(event);
             }
         });
         add(new Label("Device Port:", skin)).pad(4);
@@ -121,6 +138,8 @@ public class MenuWindow extends Table {
                     boolean success = deviceManager.initDevice(settings.devicePort.name);
                     if (!success) {
                         alert("Init Device failed!");
+                    } else {
+                        alert("Success!");
                     }
                 }
                 return true;

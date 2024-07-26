@@ -39,4 +39,8 @@ public class DeviceManager {
     public boolean isInitialized() {
         return initialized;
     }
+
+    public DeviceConnection getDeviceConnection() {
+        return deviceConnection;
+    }
 }
