@@ -82,16 +82,14 @@ public class SensoryGrid extends Actor {
     }
 
     public void makeGrid(int n_lines) {
-        Random randGen = new Random();
-
         lines.clear();
-        float y_cum = randGen.nextFloat() + 0.1f;;
+        float y_cum = 0.0f;
         for (int i = 0; i < n_lines; i++) {
-            float dy = randGen.nextFloat() + 0.5f;
+            float dy = 1.0f;
             lines.add(y_cum + dy);
             y_cum += dy;
         }
-        y_cum += randGen.nextFloat() + 0.1f;
+        y_cum += 1.0f;
 
         for (int i = 0; i < n_lines; i++) {
             lines.set(i, lines.get(i) * getHeight() / y_cum);
