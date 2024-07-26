@@ -7,13 +7,18 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL32;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -23,26 +28,67 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.lotusgames.sensoryapp.GameCounter;
 import com.lotusgames.sensoryapp.Settings;
+import com.lotusgames.sensoryapp.device.DeviceConnection;
 import com.lotusgames.sensoryapp.device.DeviceManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MenuWindow extends Table {
     Settings settings;
     GameCounter gameCounter;
     DeviceManager deviceManager;
     Skin skin;
+    SelectBox<DeviceConnection.Port> devicePort;
+    DeviceConnection.Port nullport = new DeviceConnection.Port(null, null);
+
+    private void alert(String text) {
+        getStage().addActor(new Notification(text, Notification.NotificationType.FAIL));
+    }
+
+    public void reloadDevicePorts() {
+        ArrayList<DeviceConnection.Port> options = new ArrayList<>(Arrays.asList(settings.devicePortOptions));
+        options.add(0, nullport);
+        DeviceConnection.Port[] options_arr = new DeviceConnection.Port[options.size()];
+        options.toArray(options_arr);
+        devicePort.setItems(options_arr);
+        if (options.contains(settings.devicePort)) {
+            devicePort.setSelected(settings.devicePort);
+        } else {
+            devicePort.setSelected(nullport);
+        }
+    }
+
+    public boolean open() {
+        addAction(Actions.moveBy(0, -getHeight(), 0.5f, Interpolation.exp5));
+        return true;
+    }
+
+    public boolean close() {
+        if (settings.devicePort == null) {
+            alert("Please select Device Port and press Init Device");
+            return false;
+        }
+        if (!deviceManager.isInitialized()) {
+            alert("Please press Init Device");
+            return false;
+        }
+        addAction(Actions.moveBy(0, getHeight(), 0.5f, Interpolation.exp5));
+        return true;
+    }
 
     private void configDevicePort() {
-        SelectBox<String> devicePort = new SelectBox<>(skin);
-        devicePort.setItems(settings.devicePortOptions);
-        if (Arrays.asList(settings.devicePortOptions).contains(settings.devicePort)) {
-            devicePort.setSelected(settings.devicePort);
-        }
+        devicePort = new SelectBox<>(skin);
+        reloadDevicePorts();
         devicePort.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                settings.devicePort = devicePort.getSelected();
+                if (devicePort.getSelected() == nullport) {
+                    settings.devicePort = null;
+                } else {
+                    settings.devicePort = devicePort.getSelected();
+                }
             }
         });
         add(new Label("Device Port:", skin)).pad(4);
@@ -69,7 +115,14 @@ public class MenuWindow extends Table {
         initDevice.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                deviceManager.initDevice(settings.devicePort);
+                if (settings.devicePort == null) {
+                    alert("Please select Device Port");
+                } else {
+                    boolean success = deviceManager.initDevice(settings.devicePort.name);
+                    if (!success) {
+                        alert("Init Device failed!");
+                    }
+                }
                 return true;
             }
         });
@@ -106,7 +159,7 @@ public class MenuWindow extends Table {
 
     private void configCorrectPart() {
         Label correctPart = new Label("", skin);
-        gameCounter.addCallback(() -> correctPart.setText("%d %%".formatted((int)(gameCounter.getCorrectPart() * 100))));
+        gameCounter.addCallback(() -> correctPart.setText((int)(gameCounter.getCorrectPart() * 100) + " %"));
         add(new Label("Correct percent:", skin)).pad(4);
         add(correctPart).width(100).pad(4);
     }
@@ -147,5 +200,17 @@ public class MenuWindow extends Table {
 
         renderer.end();
         batch.begin();
+    }
+
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        Actor sup = super.hit(x, y, touchable);
+        if (sup != null) {
+            return sup;
+        }
+        if (touchable && x > 0 && x < getWidth() && y > 0 && y < getHeight()) {
+            return this;
+        }
+        return null;
     }
 }

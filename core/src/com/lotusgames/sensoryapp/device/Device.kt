@@ -132,7 +132,7 @@ class Device (var deviceConnection: DeviceConnection) {
         val cmd = command
 
         val timeout = 1000;
-        deviceConnection.write(cmd)
+        deviceConnection.write(cmd, timeout)
         val response: ByteArray
         if (command[0] == CMD_SELF_TEST) {
             response = deviceConnection.read(7, timeout)
@@ -160,7 +160,7 @@ class Device (var deviceConnection: DeviceConnection) {
 
         val response: ByteArray
         val timeout = 1000;
-        deviceConnection.write(cmd)
+        deviceConnection.write(cmd, timeout)
         var beg: ByteArray;
         do {
             beg = deviceConnection.read(1, timeout)

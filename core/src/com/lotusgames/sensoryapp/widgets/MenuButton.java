@@ -15,11 +15,14 @@ public class MenuButton extends Actor {
     private class MyInputListener extends InputListener {
         public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
             if (closed) {
-                menuWindow.addAction(Actions.moveBy(0, -menuWindow.getHeight(), 0.5f, Interpolation.exp5));
+                if (menuWindow.open()) {
+                    closed = false;
+                }
             } else {
-                menuWindow.addAction(Actions.moveBy(0, menuWindow.getHeight(), 0.5f, Interpolation.exp5));
+                if (menuWindow.close()) {
+                    closed = true;
+                }
             }
-            closed = !closed;
             return true;
         }
         public void touchUp (InputEvent event, float x, float y, int pointer, int button) {

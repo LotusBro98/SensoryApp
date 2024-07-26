@@ -1,10 +1,12 @@
 package com.lotusgames.sensoryapp;
 
+import com.lotusgames.sensoryapp.device.DeviceConnection;
+
 import java.util.List;
 
 public class Settings {
-    public String devicePort = "";
-    public String[] devicePortOptions;
+    public DeviceConnection.Port devicePort = null;
+    public DeviceConnection.Port[] devicePortOptions;
     public int[] pinsA = {0, 1, 2, 3, 4, 5, 6, 7};
     public int[] pinsB = {12, 13, 14, 15};
     public float tau_us = 15;

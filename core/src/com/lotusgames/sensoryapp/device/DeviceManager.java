@@ -8,6 +8,7 @@ public class DeviceManager {
     DeviceConnection deviceConnection;
     public Device device;
     Settings settings;
+    boolean initialized = false;
 
     public DeviceManager(DeviceConnection deviceConnection, Settings settings) {
         this.deviceConnection = deviceConnection;
@@ -15,7 +16,7 @@ public class DeviceManager {
         this.settings = settings;
     }
 
-    public Boolean initDevice(String portName) {
+    public boolean initDevice(String portName) {
         try {
             deviceConnection.close();
             deviceConnection.open(portName);
@@ -28,10 +29,14 @@ public class DeviceManager {
                     500
             ));
             device.initialize();
+            initialized = true;
             return true;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }
