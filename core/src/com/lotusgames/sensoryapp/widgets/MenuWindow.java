@@ -34,6 +34,7 @@ import com.lotusgames.sensoryapp.device.DeviceManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class MenuWindow extends Table {
@@ -50,13 +51,21 @@ public class MenuWindow extends Table {
 
     public void reloadDevicePorts() {
         settings.devicePortOptions = deviceManager.getDeviceConnection().availablePorts();
+
         ArrayList<DeviceConnection.Port> options = new ArrayList<>(Arrays.asList(settings.devicePortOptions));
         options.add(0, nullport);
-        DeviceConnection.Port[] options_arr = new DeviceConnection.Port[options.size()];
-        options.toArray(options_arr);
+        DeviceConnection.Port[] options_arr = options.toArray(new DeviceConnection.Port[0]);
+
+        List<String> options_names = new ArrayList<>();
+        for (DeviceConnection.Port port : options) {
+            options_names.add(Objects.requireNonNullElse(port.name, ""));
+        }
+
+        String selPort = settings.devicePort == null ? "" : settings.devicePort.name;
         devicePort.setItems(options_arr);
-        if (options.contains(settings.devicePort)) {
-            devicePort.setSelected(settings.devicePort);
+
+        if (options_names.contains(selPort)) {
+            devicePort.setSelected(options_arr[options_names.indexOf(selPort)]);
         } else {
             DeviceConnection.Port selectPort = nullport;
             for (DeviceConnection.Port port : settings.devicePortOptions) {
