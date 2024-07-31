@@ -7,6 +7,10 @@ class Segment(var name: String,
               var mask2: IntArray,
               var timeSlot: Int)
 {
+    constructor(name: String, adr1: Int, mask1: Collection<Int>, adr2: Int, mask2: MutableSet<Int>, timeSlot: Int) : this(
+        name, adr1, mask1.toIntArray(), adr2, mask2.toIntArray(), timeSlot
+    )
+
     fun getMaskStr(mask: IntArray): String {
         var str = ""
         for (i in mask) {

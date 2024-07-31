@@ -34,6 +34,7 @@ import com.lotusgames.sensoryapp.device.DeviceManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class MenuWindow extends Table {
     Settings settings;
@@ -183,6 +184,51 @@ public class MenuWindow extends Table {
         add(correctPart).width(100).pad(4);
     }
 
+    private void configPinBox(CheckBox checkBox, int i, Set<Integer> pins) {
+        checkBox.setChecked(pins.contains(i));
+        checkBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                CheckBox box = (CheckBox) actor;
+                if (box.isChecked()) {
+                    pins.add(i);
+                } else {
+                    pins.remove(i);
+                }
+                System.out.println(pins);
+            }
+        });
+    }
+
+    private void configPinSelector() {
+        Table pinTable = new Table();
+
+        pinTable.add(new Label("pins A", skin));
+        for (int i = 0; i < 16; i++) {
+            CheckBox checkBox = new CheckBox(null, skin);
+            configPinBox(checkBox, i, settings.pinsA);
+            pinTable.add(checkBox).width(30);
+        }
+        pinTable.row();
+
+        pinTable.add(new Label("pins B", skin));
+        for (int i = 0; i < 16; i++) {
+            CheckBox checkBox = new CheckBox(null, skin);
+            configPinBox(checkBox, i, settings.pinsB);
+            pinTable.add(checkBox).width(30);
+        }
+        pinTable.row();
+
+        pinTable.add(new Label("", skin));
+        for (int i = 0; i < 16; i++) {
+            pinTable.add(new Label(String.valueOf(i), skin)).center();
+        }
+        pinTable.row();
+
+        add(pinTable).colspan(2).spaceBottom(10);
+        row();
+    }
+
     public MenuWindow(float x, float y, float width, float height, Settings settings, GameCounter gameCounter, DeviceManager deviceManager) {
         this.settings = settings;
         this.gameCounter = gameCounter;
@@ -195,6 +241,7 @@ public class MenuWindow extends Table {
 
         configDevicePort();
         configTauSelect();
+        configPinSelector();
         configInitDevice();
         configResetGame();
         configShowLines();
@@ -214,7 +261,7 @@ public class MenuWindow extends Table {
         renderer.translate(getX(), getY(), 0);
 
         renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(0, 0, 0, 0.7f);
+        renderer.setColor(0, 0, 0, 0.9f);
         renderer.rect(0, 0, getWidth(), getHeight());
 
         renderer.end();
